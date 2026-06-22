@@ -1,12 +1,61 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/all";
+import { campaigns } from "./cms-data.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const isWorkPage = document.querySelector(".page.work-page");
   if (!isWorkPage) return;
 
   gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  // --- CMS INJECTION ---
+  const workItemsContainer = document.querySelector(".work-items");
+  if (workItemsContainer) {
+    let rowsHtml = "";
+    for (let i = 0; i < campaigns.length; i += 2) {
+      const item1 = campaigns[i];
+      const item2 = campaigns[i + 1];
+      
+      rowsHtml += `<div class="row">`;
+      
+      // First item
+      rowsHtml += `
+        <div class="work-item">
+          <div class="work-item-img">
+            <a href="/project.html?id=${item1.id}">
+              <img src="${item1.previewImage}" alt="${item1.title}" />
+            </a>
+          </div>
+          <div class="work-item-content">
+            <h3>${item1.title}</h3>
+            <p class="mn">${item1.category}</p>
+          </div>
+        </div>
+      `;
+      
+      // Second item (if exists)
+      if (item2) {
+        rowsHtml += `
+          <div class="work-item">
+            <div class="work-item-img">
+              <a href="/project.html?id=${item2.id}">
+                <img src="${item2.previewImage}" alt="${item2.title}" />
+              </a>
+            </div>
+            <div class="work-item-content">
+              <h3>${item2.title}</h3>
+              <p class="mn">${item2.category}</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      rowsHtml += `</div>`;
+    }
+    workItemsContainer.innerHTML = rowsHtml;
+  }
+  // ---------------------
 
   let scrollTriggerInstances = [];
 

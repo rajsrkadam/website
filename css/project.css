@@ -193,8 +193,16 @@
     transform: translateX(0%);
   }
 
+  .project-hero .project-hero-header-h1 img {
+    display: none;
+  }
+
   .project-hero .project-hero-description {
-    width: 100%;
+    width: 90%;
+  }
+
+  .project-hero .project-hero-description p {
+    font-size: 1rem !important;
   }
 
   .project-preview .project-preview-wrapper {

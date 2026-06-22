@@ -1,12 +1,50 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/all";
+import { campaigns } from "./cms-data.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const isProjectPage = document.querySelector(".page.project-page");
   if (!isProjectPage) return;
 
   gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  // --- CMS INJECTION ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
+  const campaign = campaigns.find(c => c.id === id) || campaigns[0];
+
+  const titleEl = document.querySelector(".project-hero-header-h1 h1");
+  if(titleEl) titleEl.textContent = campaign.title;
+
+  const tagsEl = document.querySelector(".project-tags");
+  if(tagsEl) {
+    tagsEl.innerHTML = `
+      <p class="mn">${campaign.category}</p>
+      <p class="mn">//</p>
+      <p class="mn">${campaign.segment || 'Campaign'}</p>
+    `;
+  }
+
+  const descEl = document.querySelector(".project-hero-description p");
+  if(descEl) {
+    if(campaign.description) {
+      descEl.textContent = campaign.description;
+    } else {
+      descEl.innerHTML = `<strong>Challenge:</strong> ${campaign.challenge}<br><br><strong>Solution:</strong> ${campaign.solution}<br><br><strong>Result:</strong> ${campaign.result}`;
+    }
+  }
+
+  const mainImgEl = document.querySelector(".preview-img.main-preview-img img");
+  if(mainImgEl) mainImgEl.src = campaign.heroImage;
+
+  // Remove the client feedback and snapshots sections
+  const feedbackEl = document.querySelector(".project-client-feedback");
+  if(feedbackEl) feedbackEl.style.display = 'none';
+
+  const snapshotsEl = document.querySelector(".project-snapshots");
+  if(snapshotsEl) snapshotsEl.style.display = 'none';
+  // ---------------------
 
   const initHeroAnimations = () => {
     const heroTitle = SplitText.create(".project-hero-header-h1 h1", {
@@ -76,7 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   };
 
-  initHeroAnimations();
+  // Give DOM a tick to update before Splitting Text
+  setTimeout(() => {
+    initHeroAnimations();
+  }, 100);
 
   ScrollTrigger.create({
     trigger: ".project-page-whitespace",
@@ -101,13 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const yPreviewColTranslate = self.progress * 300;
       const mainPreviewImgScale = 2 - self.progress * 0.85;
 
-      projectPreviewWrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      if(projectPreviewWrapper) projectPreviewWrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
 
       previewCols.forEach((previewCol) => {
         previewCol.style.transform = `translateY(${yPreviewColTranslate}px)`;
       });
 
-      mainPreviewImg.style.transform = `scale(${mainPreviewImgScale})`;
+      if(mainPreviewImg) mainPreviewImg.style.transform = `scale(${mainPreviewImgScale})`;
     },
   });
 });

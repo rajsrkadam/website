@@ -1,11 +1,54 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { campaigns } from "./cms-data.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const isHomePage = document.querySelector(".page.home-page");
   if (!isHomePage) return;
 
   gsap.registerPlugin(ScrollTrigger);
+
+  // --- CMS INJECTION ---
+  const featuredTitlesContainer = document.querySelector(".featured-titles");
+  if (featuredTitlesContainer) {
+    // Hide titles initially to prevent bleeding into hero
+    featuredTitlesContainer.style.visibility = "hidden";
+
+    let titlesHtml = `<div class="featured-title-wrapper"><h1 class="featured-title">Work Playground</h1></div>`;
+    campaigns.forEach(campaign => {
+      titlesHtml += `
+        <div class="featured-title-wrapper">
+          <div class="featured-title-img">
+            <img src="${campaign.previewImage}" alt="${campaign.title}" />
+          </div>
+          <h1 class="featured-title">${campaign.title}</h1>
+        </div>
+      `;
+    });
+    featuredTitlesContainer.innerHTML = titlesHtml;
+
+    // Reveal titles, images, and footer when section enters viewport
+    const featuredFooter = document.querySelector(".featured-work-footer");
+    const featuredImages = document.querySelector(".featured-images");
+    if (featuredFooter) featuredFooter.style.visibility = "hidden";
+    if (featuredImages) featuredImages.style.visibility = "hidden";
+
+    ScrollTrigger.create({
+      trigger: ".featured-work",
+      start: "top 90%",
+      onEnter: () => {
+        featuredTitlesContainer.style.visibility = "visible";
+        if (featuredFooter) featuredFooter.style.visibility = "visible";
+        if (featuredImages) featuredImages.style.visibility = "visible";
+      },
+      onLeaveBack: () => {
+        featuredTitlesContainer.style.visibility = "hidden";
+        if (featuredFooter) featuredFooter.style.visibility = "hidden";
+        if (featuredImages) featuredImages.style.visibility = "hidden";
+      },
+    });
+  }
+  // ---------------------
 
   let scrollTriggerInstance = null;
 
@@ -22,22 +65,20 @@ document.addEventListener("DOMContentLoaded", () => {
       scrollTriggerInstance.kill();
     }
 
-    const indicatorContainer = document.querySelector(
-      ".featured-work-indicator"
-    );
+    const indicatorContainer = document.querySelector(".featured-work-indicator");
+    if(indicatorContainer) {
+      indicatorContainer.innerHTML = "";
+      for (let section = 1; section <= 5; section++) {
+        const sectionNumber = document.createElement("p");
+        sectionNumber.className = "mn";
+        sectionNumber.textContent = `0${section}`;
+        indicatorContainer.appendChild(sectionNumber);
 
-    indicatorContainer.innerHTML = "";
-
-    for (let section = 1; section <= 5; section++) {
-      const sectionNumber = document.createElement("p");
-      sectionNumber.className = "mn";
-      sectionNumber.textContent = `0${section}`;
-      indicatorContainer.appendChild(sectionNumber);
-
-      for (let i = 0; i < 10; i++) {
-        const indicator = document.createElement("div");
-        indicator.className = "indicator";
-        indicatorContainer.appendChild(indicator);
+        for (let i = 0; i < campaigns.length; i++) {
+          const indicator = document.createElement("div");
+          indicator.className = "indicator";
+          indicatorContainer.appendChild(indicator);
+        }
       }
     }
 
@@ -67,37 +108,37 @@ document.addEventListener("DOMContentLoaded", () => {
       { y: 500, x: 4500 },
     ];
 
-    const featuredCardPos =
-      window.innerWidth >= 1600 ? featuredCardPosLarge : featuredCardPosSmall;
-
+    const featuredCardPos = window.innerWidth >= 1600 ? featuredCardPosLarge : featuredCardPosSmall;
     const featuredTitles = document.querySelector(".featured-titles");
-    const moveDistance = window.innerWidth * 4;
+    const moveDistance = window.innerWidth * 8;
 
     const imagesContainer = document.querySelector(".featured-images");
+    if(imagesContainer) {
+      imagesContainer.innerHTML = "";
 
-    imagesContainer.innerHTML = "";
+      campaigns.forEach((campaign, index) => {
+        const featuredImgCard = document.createElement("div");
+        featuredImgCard.className = `featured-img-card featured-img-card-${index + 1}`;
 
-    for (let i = 1; i <= 10; i++) {
-      const featuredImgCard = document.createElement("div");
-      featuredImgCard.className = `featured-img-card featured-img-card-${i}`;
+        const img = document.createElement("img");
+        img.src = campaign.previewImage;
+        img.alt = campaign.title;
+        featuredImgCard.appendChild(img);
 
-      const img = document.createElement("img");
-      img.src = `/images/work-items/work-item-${i}.jpg`;
-      img.alt = `featured work image ${i}`;
-      featuredImgCard.appendChild(img);
+        // Fallback to first position if array out of bounds
+        const position = featuredCardPos[index] || featuredCardPos[0];
 
-      const position = featuredCardPos[i - 1];
+        gsap.set(featuredImgCard, {
+          x: position.x,
+          y: position.y,
+        });
 
-      gsap.set(featuredImgCard, {
-        x: position.x,
-        y: position.y,
+        imagesContainer.appendChild(featuredImgCard);
       });
-
-      imagesContainer.appendChild(featuredImgCard);
     }
 
     const featuredImgCards = document.querySelectorAll(".featured-img-card");
-    featuredImgCards.forEach((featuredImgCard, index) => {
+    featuredImgCards.forEach((featuredImgCard) => {
       gsap.set(featuredImgCard, {
         z: -1500,
         scale: 0,
@@ -107,14 +148,16 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollTriggerInstance = ScrollTrigger.create({
       trigger: ".featured-work",
       start: "top top",
-      end: `+=${window.innerHeight * 5}px`,
+      end: `+=\${window.innerHeight * 5}px`,
       pin: true,
       scrub: 1,
       onUpdate: (self) => {
         const xPosition = -moveDistance * self.progress;
-        gsap.set(featuredTitles, {
-          x: xPosition,
-        });
+        if(featuredTitles) {
+          gsap.set(featuredTitles, {
+            x: xPosition,
+          });
+        }
 
         featuredImgCards.forEach((featuredImgCard, index) => {
           const staggerOffset = index * 0.075;
@@ -132,17 +175,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const indicators = document.querySelectorAll(".indicator");
         const totalIndicators = indicators.length;
-        const progressPerIndicator = 1 / totalIndicators;
+        if(totalIndicators > 0) {
+          const progressPerIndicator = 1 / totalIndicators;
 
-        indicators.forEach((indicator, index) => {
-          const indicatorStart = index * progressPerIndicator;
-          const indicatorOpacity = self.progress > indicatorStart ? 1 : 0.2;
+          indicators.forEach((indicator, index) => {
+            const indicatorStart = index * progressPerIndicator;
+            const indicatorOpacity = self.progress > indicatorStart ? 1 : 0.2;
 
-          gsap.to(indicator, {
-            opacity: indicatorOpacity,
-            duration: 0.3,
+            gsap.to(indicator, {
+              opacity: indicatorOpacity,
+              duration: 0.3,
+            });
           });
-        });
+        }
       },
     });
   };

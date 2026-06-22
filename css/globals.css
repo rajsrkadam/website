@@ -192,3 +192,104 @@ p.mn {
     font-size: 3rem;
   }
 }
+
+
+/* Marquee animations for Other Campaigns */
+@keyframes marqueeLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75em 1.5em;
+  border: 1.5px solid var(--fg);
+  border-radius: 50px;
+  font-family: "formula-narrow";
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.marquee-tag:hover {
+  background-color: var(--fg);
+  color: var(--bg);
+  transform: scale(1.05);
+}
+
+.marquee-tag.accent {
+  border-color: var(--accent1);
+}
+
+.marquee-tag.accent:hover {
+  background-color: var(--accent1);
+  color: #fff;
+}
+
+/* Loader Styles */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loader-content {
+  text-align: center;
+  overflow: visible;
+}
+
+.loader-title {
+  font-size: clamp(2rem, 12vw, 6rem);
+  font-family: "formula-extended", sans-serif;
+  margin-bottom: 0.2em;
+  padding-right: 0.1em;
+  color: var(--fg);
+}
+
+.loader-subtitle {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-family: "Instrument Serif", serif;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--fg);
+  opacity: 0.7;
+}
+
+/* Add custom marquee colors */
+.marquee-tag:nth-child(3n) {
+  border-color: #fca311;
+}
+.marquee-tag:nth-child(3n):hover {
+  background-color: #fca311;
+  color: #000;
+}
+.marquee-tag:nth-child(3n+1) {
+  border-color: #14213d;
+}
+.marquee-tag:nth-child(3n+1):hover {
+  background-color: #14213d;
+  color: #fff;
+}
+.marquee-tag:nth-child(3n+2) {
+  border-color: #e5e5e5;
+}
+.marquee-tag:nth-child(3n+2):hover {
+  background-color: #e5e5e5;
+  color: #000;
+}

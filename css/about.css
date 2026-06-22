@@ -185,25 +185,36 @@
 @media (max-width: 1000px) {
   .about-hero {
     padding: 8em 2em 4em 2em;
+    justify-content: center;
+    gap: 3em;
+  }
+
+  .about-hero .about-hero-header {
+    order: 1;
   }
 
   .about-hero .about-hero-header h1 {
     font-size: 4rem;
   }
 
-  .about-hero .about-hero-bio {
-    width: 100%;
-  }
-
   .about-hero .about-hero-portrait {
-    width: 25%;
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(0deg);
+    position: relative;
+    width: 40%;
+    top: auto;
+    left: auto;
+    transform: none;
+    order: 2;
   }
 
   .about-hero .about-hero-portrait img {
-    position: absolute;
-    height: 110%;
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .about-hero .about-hero-bio {
+    width: 100%;
+    order: 3;
   }
 
   .about-copy .about-copy-content {

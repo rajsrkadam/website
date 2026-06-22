@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const heroImg = document.querySelector(".hero-img img");
   let currentImageIndex = 1;
-  const totalImages = 10;
+  const totalImages = 8;
   let scrollTriggerInstance = null;
 
   setInterval(() => {
